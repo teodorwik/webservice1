@@ -21,13 +21,13 @@ public class PersonEntity {
     String lastName;
 
     @ElementCollection
-    List<String> Groups;
+    List<String> groups;
 
 
     public PersonEntity(String firstName, String lastName, List<String> groups) {
         this.id = UUID.randomUUID().toString();
         this.firstName = firstName;
         this.lastName = lastName;
-        Groups = groups;
+        groups = groups;
     }
 }

@@ -16,9 +16,9 @@ public class PersonController {
     PersonRepository personRepository;
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<PersonEntity> getPersonById(@PathVariable(value= "id") String id ) throws Exception{
-        PersonEntity person = personRepository.findById(id).orElseThrow();
-        return ResponseEntity.ok().body(person);
+    public ResponseEntity<PersonDTO> getPersonById(@PathVariable(value= "id") String id ) throws Exception{
+        PersonDTO personDTO = personService.getPersonDto(id);
+        return ResponseEntity.ok().body(personDTO);
     }
 
     @PostMapping("/create")
@@ -29,10 +29,10 @@ public class PersonController {
 
     @DeleteMapping("/delete/{id}")
     public String deletePerson(@PathVariable(value ="id") String id) throws Exception {
-        return personService.deletePerson(id);
+        return personService.deleteMember(id);
     }
 
-    @PutMapping
+    @PutMapping("/update/{id}")
     public ResponseEntity<PersonEntity> updatePerson(@PathVariable(value = "id") String id, @Valid @RequestBody PersonEntity person) throws Exception{
         final PersonEntity updatePerson = personService.getPersonEntity(id, person);
         return ResponseEntity.ok(updatePerson);

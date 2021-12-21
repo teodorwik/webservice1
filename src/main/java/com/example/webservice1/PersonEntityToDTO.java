@@ -9,7 +9,7 @@ public interface PersonEntityToDTO {
                 personEntity.getId(),
                 personEntity.firstName,
                 personEntity.getLastName(),
-                personEntity.Groups
+                personEntity.groups
         );
     }
 }
