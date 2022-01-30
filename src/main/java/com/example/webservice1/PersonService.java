@@ -3,6 +3,7 @@ package com.example.webservice1;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,17 +22,17 @@ public class PersonService {
         return personRepository.save(personEntity);
     }
 
-    public String deletePerson(String id) throws Exception{
+    public String deletePerson(String id){
         PersonEntity person = personRepository.findById(id).orElseThrow();
-        personRepository.delete(person);
+        personRepository.delete(id);
         return id;
     }
 
-    public String deleteMember(String memberId) throws Exception{
+    public String deleteMember(String memberId){
         PersonEntity person = personRepository.findById(memberId).orElseThrow();
-        personRepository.delete(person);
+        personRepository.delete(memberId);
 
-        WebClient webClient = WebClient.create("http://localhost:8080");
+        WebClient webClient = WebClient.create("http://localhost:8081");
         String member = webClient
                 .delete()
                 .uri("/groups/deleteMember/"+memberId)
@@ -43,23 +44,20 @@ public class PersonService {
     }
 
 
-    public PersonDTO getPersonDto(String id) throws Exception{
+    public PersonDTO getPersonDto(String id){
         PersonEntity person = personRepository.findById(id).orElseThrow();
+        PersonDTO personDTO = new PersonDTO(person.id, person.firstName, person.lastName);
 
-        WebClient webClient = WebClient.create("http://localhost:8080");
-        List<GroupDTO> groups = person.groups.stream()
-                .map(groupId -> {
-                    return webClient.get()
-                            .uri("/groups/get" + person.groups)
-                            .header("header", "key")
-                            .retrieve()
-                            .bodyToMono(GroupDTO.class)
-                            .block();
-                })
-                .collect(Collectors.toList());
-        PersonDTO personDTO = new PersonDTO(person.id, person.firstName, person.lastName, groups);
+        WebClient webClient = WebClient.create("http://localhost:8081");
+        person.Groups.stream()
+                .map(groupId -> webClient.get()
+                .uri("/groups/get" + groupId)
+                .header("header", "key")
+                .retrieve()
+                .bodyToMono(GroupDTO.class)
+                .block())
+                .forEach(group -> personDTO.getGroups().add(group));
         return personDTO;
     }
-
 
 }
